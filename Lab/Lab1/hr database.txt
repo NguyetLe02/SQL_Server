@@ -1,0 +1,168 @@
+CREATE TABLE regions(
+	REGION_ID INT NOT NULL PRIMARY KEY,
+	REGION_NAME VARCHAR(25)
+);
+
+CREATE TABLE countries(
+	COUNTRY_ID CHAR(2) NOT NULL PRIMARY KEY,
+	COUNTRY_NAME VARCHAR(40),
+	REGION_ID INT
+);
+
+CREATE TABLE locations(
+	LOCATION_ID INT  NOT NULL PRIMARY KEY,
+	STREET_ADDRESS VARCHAR(25),
+	POSTAL_CODE VARCHAR(12),
+	CITY VARCHAR(30),
+	STATE_PROVINCE VARCHAR(12),
+	COUNTRY_ID CHAR(2)
+);
+
+CREATE TABLE departments(
+	DEPARTMENT_ID INT NOT NULL PRIMARY KEY,
+	DEPARTMENT_NAME VARCHAR(20),
+	MANAGER_ID INT ,
+	LOCATION_ID INT
+);
+
+CREATE TABLE job_history(
+	EMPLOYEE_ID INT,
+	START_DATE DATE,
+	END_DATE DATE,
+	JOB_ID VARCHAR(10),
+	DEPARTMENT_ID INT,
+	PRIMARY KEY(EMPLOYEE_ID, START_DATE)
+);
+
+CREATE TABLE employees(
+	EMPLOYEE_ID INT NOT NULL PRIMARY KEY,
+	FIRST_NAME VARCHAR(20),
+	LAST_NAME VARCHAR(25),
+	EMAIL VARCHAR(25),
+	PHONE_NUMBER VARCHAR(2),
+	HIRE_DATE DATE,
+	JOB_ID VARCHAR(10),
+	SALARY INT,
+	COMMISSION_PCT INT,
+	MANAGER_ID INT,
+	DEPARTMENT_ID INT
+);
+
+CREATE TABLE jobs(
+	JOB_ID VARCHAR(10) NOT NULL PRIMARY KEY,
+	JOB_TITLE VARCHAR(35),
+	MIN_SALARY INT,
+	MAX_SALARY INT
+);
+
+CREATE TABLE job_grades(
+	GRADE_LEVEL VARCHAR(2) NOT NULL PRIMARY KEY,
+	LOWEST_SAL INT,
+	HIGHEST_SAL INT
+);
+
+1.
+ALTER TABLE countries RENAME TO  country_new;
+
+2.
+ALTER TABLE locations ADD region_id int;
+
+3.
+CREATE TABLE locations_copy(
+	ID INT NOT NULL,
+	LOCATION_ID INT  NOT NULL PRIMARY KEY,
+	STREET_ADDRESS VARCHAR(25),
+	POSTAL_CODE VARCHAR(12),
+	CITY VARCHAR(30),
+	STATE_PROVINCE VARCHAR(12),
+	COUNTRY_ID CHAR(2)
+);
+
+INSERT INTO locations_copy(location_id,street_address,postal_code,city,state_province,country_id)
+SELECT location_id,street_address,postal_code,city,state_province,country_id
+FROM locations;
+
+DROP TABLE locations;
+ALTER TABLE locations_copy RENAME TO locations;
+
+4.
+CREATE TABLE locations_copy(
+	ID INT NOT NULL,
+	LOCATION_ID INT  NOT NULL PRIMARY KEY,
+	STREET_ADDRESS VARCHAR(25),
+	POSTAL_CODE VARCHAR(12),
+	CITY VARCHAR(30),
+	STATE_PROVINCE VARCHAR(12),
+	REGION_ID INT,
+	COUNTRY_ID CHAR(2)
+);
+
+INSERT INTO locations_copy(id,location_id,street_address,postal_code,city,state_province,country_id)
+SELECT id,location_id,street_address,postal_code,city,state_province,country_id
+FROM locations;
+
+DROP TABLE locations;
+ALTER TABLE locations_copy RENAME TO locations;
+
+5.
+ ALTER TABLE locations
+ ALTER COLUMN country_id TYPE SMALLINT USING country_id::SMALLINT;
+
+6.
+ALTER TABLE locations
+DROP COLUMN city;
+
+7.
+ALTER TABLE locations
+RENAME COLUMN state_province TO state;
+
+8.
+ALTER TABLE locations
+DROP CONSTRAINT locations_copy_pkey1;
+
+ALTER TABLE locations
+ADD PRIMARY KEY (location_id);
+
+9.
+ALTER TABLE locations
+DROP CONSTRAINT locations_pkey;
+
+ALTER TABLE locations
+ADD PRIMARY KEY (location_id,country_id);
+
+10.
+ALTER TABLE locations
+DROP CONSTRAINT locations_pkey;
+
+11.
+ALTER TABLE job_history 
+ADD CONSTRAINT fk_job_id 
+FOREIGN KEY (JOB_ID) 
+REFERENCES JOBS(JOB_ID);
+
+12.
+ALTER TABLE job_history 
+DROP CONSTRAINT fk_job_id;
+
+ALTER TABLE job_history 
+ADD CONSTRAINT fk_job_id 
+FOREIGN KEY (JOB_ID) 
+REFERENCES JOBS(JOB_ID);
+
+13.
+ALTER TABLE job_history DROP CONSTRAINT fk_job_id;
+
+14.
+CREATE INDEX indx_job_id ON job_history (JOB_ID);
+
+15.
+DROP INDEX indx_job_id;
+
+
+
+
+
+
+
+
+
